@@ -38,9 +38,11 @@ mqttc.connect(url.hostname, url.port)
 # Publish a message
 #mqttc.publish("hello/world", "my message 2", retain=True)
 
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from time import gmtime, strftime, sleep, mktime
 import datetime
+
+GPIO.setmode(GPIO.BOARD)
 
 last_status = 0
 last_updated_time = gmtime()
@@ -64,17 +66,13 @@ def on_motion():
 def on_no_motion():
   mqttc.publish("pipong/status", make_message("NOT IN USE"), retain=True)
 
-#GPIO.setup(16, GPIO.IN)
+GPIO.setup(16, GPIO.IN)
 
 mqttc.loop_start()
-i_list = [0]*20 + [1]*10
-i = 0
-#while True:
-for i in i_list:
-  i = i ^ 1
-  #i=GPIO.input(11)
+while True:
+  i=GPIO.input(16)
   if i==0:
     on_no_motion()
   if i==1:
     on_motion()
-  sleep(0.3)
+  sleep(1)
